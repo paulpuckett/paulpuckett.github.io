@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>KY Vacant Properties</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!--  Load javascript, jquery, and simple statistics libraries  -->
+    
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="simple_statistics.js"></script>
+    
+    <!--Link stylesheets -->
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <!-- Style rules below are associated with the html page body -->
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 960px;
+            height: 540px;
+            margin: 10px auto;
+            background: whitesmoke;
+            border: 2px solid #dddedf;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        p.author-info {
+            font-style: italic;
+            text-align: right;
+        }
+        
+        /* Style rules below are associated with the pulldown menu and legend at top left */
+       
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .legend h3 {
+            font-size: 1.1em;
+            font-weight: normal;
+            color: #001323;
+            margin: 0;
+        }
+        .legend li {
+            list-style-type: none;
+            height: 22px;
+        }
+        .legend span {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin-right: 10px;
+        }
+        .leaflet-popup-content {
+            max-width: 160px;   
+        }
+        
+        /* Style rules below are associated with the info table at top right */
+        
+        .info {
+        padding: 6px 8px;
+        font-size: 1em;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        text-align: right;   
+        }
+        .info h3 {
+        margin: 0;   
+        }
+        
+    </style>
+</head>
+
+<body>
+    
+    <!-- Set the title header -->
+    
+    <header>
+        <h1>Kentucky Vacant Housing Stock</h1>  
+        <h2>Vacant housing information in Kentucky, per County</h2>
+    </header>
+
+    <!-- Define the pulldown menu and options to be located at upper left of map  -->
+    
+    <div id='ui-controls'>
+     <label>Choose a data attribute:<br>
+        <select name="vacant">
+            <option value="VACANT_FOR" selected>vacant for rent</option>
+            <option value="VACANT_REN">rented but vacant</option> 
+            <option value="VACANT_FO2">vacant for sale only</option>
+        </select>
+        </label>
+    </div>
+    
+    <!-- Set div variable for map area  -->
+    
+    <div id='map'></div>
+
+    <!-- Set map author and user instructions in the html footer  -->
+    
+    <footer>
+        <p class=author-info>Map authored by Paul Puckett</p>
+        <p>A map regarding vacant housing information in Kentucky</p>
+        <p>Choose from the pulldown for more information statewide, or pass over and click a county to learn more.</p>
+    </footer>
+
+    <!-- Begin Javascript coding  -->
+    
+    <script>
+        
+        // Set map options, centered on KY, lock zoom level, turn off dragging and zoom control
+        
+        var options = {
+            center: [38.2, -85.8],
+            zoom: 7.4,
+            minZoom: 7.4,
+            maxZoom: 7.4,
+            dragging: false,
+            zoomControl: false
+        }
+        
+        var map = L.map('map', options);
+        
+        // Assign text to label options
+        
+        var labels = {
+        "VACANT": "vacant units",
+        "VACANT_FOR": "% vacant units for rent",
+        "VACANT_REN": "% vacant unit rented but not occupied",
+        "VACANT_FO2": "% vacant units for sale only"   
+        }
+        
+        var legend = $('.legend').html("<h3>" + labels[attribute] + "</h3><ul>"); 
+        
+        // Global datalayer variable, populated via JSON file below for use by other functions
+        
+        var dataLayer,
+            attribute = "VACANT_FOR",
+            norm = "VACANT";
+        
+        // Retrieve the KY housing JSON file from the project folder, set styles for county polygons, and add to map
+        
+        $.getJSON("ky_counties_housing.json", function(data) {
+            
+            dataLayer = L.geoJson(data, {
+                 style: function(feature) {
+                    return {
+                            color: '#dddddd',
+                            weight: 2,
+                            fillOpacity: 1,
+                            fillColor: '#1f78b4'
+                        };
+                 }
+            }).addTo(map);
+            
+            drawInfo(); // draw the info table at upper right, see function below
+            ui(); // pulldown menu at upper left, see function below
+            drawLegend(); // legend at upper left below pulldown menu, see function below
+            drawMap(); // retrieves choropleth class info and displays map, see function below
+            
+              
+        });
+        
+        // Function Listings
+        
+        function drawMap() {  //draws choropleth map based on JSON data
+            
+            var breaks = getClassBreaks();  //retrieves normalized value for county, assigns it to break class
+
+            dataLayer.eachLayer(function(layer) {
+                
+                var props = layer.feature.properties;  // assign object chain to props for typing simplification
+                
+                layer.setStyle({
+                    fillColor: getColor(props[attribute]/
+                                        props[norm], breaks)  //uses getColor function to assign color to breaks
+                });
+                
+                layer.on('mouseover', function() {  //this and bindPopup below allows access to individual county values
+                    updateInfo(this);
+                });
+                
+                layer.bindPopup("<b>"+props["NAME"]+" County</b></br>" +
+                                labels[attribute] + ": " +
+                                ((props[attribute]/props[norm])*100).toLocaleString());  
+            });
+        
+            updateLegend(breaks);  //updates the legend for the pulldown choice selected by user
+        }
+        
+        function drawInfo() {   //creates user info window at upper right of map
+
+        var info = L.control({position: 'topright'});
+
+        info.onAdd = function(map) {
+
+            var div = L.DomUtil.create('div', 'info'); // assigns window to div space from html code, and info position
+
+            return div;  
+
+        }
+                
+        info.addTo(map);
+        $(".info").hide();  // initially hides info window until user mouses over county
+            
+        dataLayer.on('mouseover', function() {  // displays the info window defined above when user mouses over county
+            $(".info").show();
+        });
+        dataLayer.on('mouseout', function() {   // hides info window when user mouses over non-county spaces
+            $(".info").hide();    
+        });
+            
+        }
+        
+        function updateInfo(layer) {    //updates info window with data updated for county user has moused over
+
+        var props = layer.feature.properties;   //simplifies object chain to single variable
+
+        // var html formats and populates info window with data unique to county moused over by user
+            
+        var html = "<h3>"+props['NAME']+" County</h3>"+
+                    "vacant housing units, out of total: <b>"+ props["VACANT"]+"</b><br>"+
+                    "# vacant units for rent: <b>"+ props["VACANT_FOR"]+"</b><br>"+
+                    "# vacant units, rented not occupied: <b>"+ props["VACANT_REN"]+"</b><br>"+
+                    "# vacant units, for sale only: <b>"+ props["VACANT_FO2"]+"</b>"
+
+        $(".info").html(html); // assigns .info style rules to html variable text
+        }
+        
+        
+        function getClassBreaks() { // uses simple statistics library to break data into five separate classes
+            
+            var values = [];    // empty array to be populated below
+            
+            // function below iterates through each JSON layer for normalized county values, pushes them to values array
+            dataLayer.eachLayer(function(layer) {
+                var value = layer.feature.properties[attribute]/layer.feature.properties[norm];
+                values.push(value);   
+            }); 
+            
+            // use simple statistics to assign values array data to five separate classes and return those values
+            var breaks = ss.jenks(values, 5);
+            return breaks;
+            
+        }   
+        
+        // uses if/else to assign colors via hex values to five break values
+        function getColor(d, breaks) {
+            if(d <= breaks[1]) {
+                return '#f1eef6';
+            } else if(d <= breaks[2]) {
+                return '#bdc9e1';
+            } else if(d <= breaks[3]) {
+                return '#74a9cf';
+            } else if(d <= breaks[4]) {
+                return '#2b8cbe'
+            } else if(d <= breaks[5]) {
+                return '#045a8d'
+            }
+        }
+        
+                
+        // adds a user interactive pull-down menu to upper left of map        
+        function ui() {
+            
+            var dataView = L.control({position: 'topleft'}); // assigns position to variable
+
+        dataView.onAdd = function(map) {
+
+            var controls = L.DomUtil.get('ui-controls');    //reaches back to html div setup for pull-down settings
+            return controls;
+        }
+
+        dataView.addTo(map);    // adds pulldown to map per instructions for topleft and div options settings
+            
+        $('select[name="vacant"]').change(function() {  
+            
+            attribute = $(this).val();
+            
+            drawMap();  // redraws map based on new pulldown setting
+            
+        });
+            
+        }
+        
+        // draws legend template in upper left of div spaces and adds it to the map
+        function drawLegend() {
+            
+            var legend = L.control({position: 'topleft'});
+
+            legend.onAdd = function (map) {
+                
+                var div = L.DomUtil.create('div', 'legend');
+                
+                return div;
+                
+            };
+
+            legend.addTo(map);
+        }
+        
+        // updates the legend per the pulldown choice selected
+        function updateLegend(breaks) {
+
+        var legend = $('.legend').html("<h3>" + attribute + "</h3><ul>"); 
+
+        for (var i = 0; i < breaks.length-1; i++) {
+            var color = getColor(breaks[i + 1], breaks);
+            legend.append('<li><span style="background:' + color + '"></span> ' +
+                (breaks[i]*100).toLocaleString() + ' &mdash; ' + 
+                (breaks[i + 1]*100).toLocaleString() + '</li>');
+        }
+        legend.append("</ul>");
+        }
+
+    </script>
+    
+</body>
+
+</html>
