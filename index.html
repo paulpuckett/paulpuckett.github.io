@@ -1,130 +1,519 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<title>MAP672 Portfolio</title>
+    <meta charset=utf-8 />
+    <title>KY Income and Education</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" />
-<!--<link href='http://fonts.googleapis.com/css?family=Imprima' rel='stylesheet' type='text/css'>-->
-<link href='http://fonts.googleapis.com/css?family=Comfortaa:700' rel='stylesheet' type='text/css'>
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
 
-<style>
-    
-  body {  
-        background: #dddddd;   
-        font-family: 'Comfortaa', cursive;
-    }
-    header { 
-            width: 100%;
-            min-width: 800px;
-            margin: 0 auto;
-            background: #005daa;
-            padding: 15px 0 20px;
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
         }
-    h1 { 
-        font-family: 'Comfortaa', cursive;
-        color: #375671; 
-        width: 80%;
-        margin: 0 auto;
-        color: whitesmoke;
-    }
-    h2 { 
-        font-family: 'Comfortaa', cursive;
-        color: #375671;
-        width: 80%;
-        margin: 0 auto;
-        color: whitesmoke;
-    }
-    h3 {
-        font-family: 'Comfortaa', cursive;
-        color: #003d71
-    }
-    p { 
-        font-size: .9em; 
-        color: #375671; 
-    }
-    ul {
-        list-style-type: none; 
-        font-size: .9em; 
-        color: #375671; 
-        line-height: 1.6em;
-    }
-    a, a:visited {   
-        color: #003d71;
-    }
-    .project {
-        width: 80%;
-        min-width: 800px;
-        height: 100%;
-        margin: 35px auto;
-    }
-    .project:after{
-        content: "";
-        display: table;
-        clear: both; 
-    }
-    .project-image {
-        width: 388px;
-        height: 240px;
-        background: white;
-        float: left;
-        margin-right: 20px;
-        border: 2px solid #dddddd;
-    }
-    
-/* CSS style rules go here! */   
-
-</style>
+        header {
+            width: 80%;
+            margin: 10px auto 10px auto;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            position:absolute;
+            top:0;
+            bottom:0;
+            right: 0;
+            width: 67%;
+/*            margin: 10px 10%;*/
+            background: whitesmoke;
+            border: 2px solid #dddedf;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .legend h3 {
+            font-size: 1.1em;
+            font-weight: normal;
+            color: #001323;
+            margin: 0 0 10px 0;
+        }
+        .legend span {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin: 0 10px 4px 0;
+        }
+        .legend label {
+            font-size: 1.1em;
+        }
+        .legend label:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .leaflet-popup-content {
+            max-width: 160px;   
+        }
+        #upper-left-panel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 50%;
+            width: 33%;
+            background: whitesmoke;
+/*            border: 2px solid #1C9976;*/
+            overflow-y: scroll;
+        }
+        #lower-left-panel {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 50%;
+            width: 33%;
+            background: whitesmoke;
+/*            border: 2px solid #1C9976;*/
+            overflow-y: scroll;
+        }
+        
+        
+    </style>
 </head>
 
 <body>
-    
+<!--
     <header>
-    <h1>MAP672: Web Mapping</h1>
-    <h2>The University of Kentucky's New Maps Plus Program</h2>
+        <h1>Income and the Price of Education</h1>
+        <h2>A Closer Look</h2>
     </header>
+-->
+
+    <div id='map'></div>
     
-    <section class="project">
-        <a target = '_blank' href="/maps/OpenStreetSanFran.pdf"/><img src="images/OpenStreetSanFran.PNG" alt="San Francisco Bus Stop Buffers" class="project-image" >
-        <h3><a target = '_blank' href="/maps/OpenStreetSanFran.pdf" >OpenStreetMaps Bus Stop Locations</a></h3>
-        <p>An exercise in map construction using OpenStreetMaps data and QGIS</p>
+    <div id='upper-left-panel'>
+        <h1>Income and the Price of Education</h1>
+        <h2>Background</h2>
+        <p>The idea of higher education in America has evolved over time. Early American colleges such as Harvard and Yale were established initially to teach and train clergy. In the mid-eighteenth century Benjamin Franklin proposed a school in Philadelphia (later to become the University of Pennsylvania), described and endorsed by Samuel Johnson of King's College (now Columbia University), that would teach, "the arts of numbering and measuring; of Surveying and Navigation, of Geography and History, of Husbandry, Commerce and Government, and in the Knowledge of all nature in the Heavens above us, and in the Air, Earth, and Water around us, and the various kinds of Meteors, Stones, Mines and Minerals, Plants and Animals, and of Every Thing useful for the comfort, convenience and Elegance of Life, in the chief Manufactures relating to any of these Things". </p>
+        <p>This approach to what was referred to in the eighteenth century as 'useful knowledge' was not fully realized until the Morrill Acts of 1862 and 1890 which required schools that received its land grants to teach the "mechanical and agricultural arts" as well as establish ROTC training. In Kentucky, the University of Kentucky and Kentucky State University are the results of these acts</p>
+        <p>In the twentieth century 'normal schools' which began as teachers colleges evolved into additional public schools such as Murray State University and Morehead State University</p>
+        <p>In the 21st century a mix of non-profit, for-profit, public and private schools have emerged but are ever evolving as some schools close and some re-evaluate the majors offered and their future course. This map is intended to inform and prompt conversations as to the type, location, and cost of post-secondary education in the Commonwealth while illustrating the median annual income in the counties of the Commonwealth in order to consider how egalitarian the idea of a 'higher education' is today. To whom is higher education realistically available, what should that education involve, and  what course(s) can we take in order to advance education into the twenty-first century</p>
+        <h2>About this map</h2>
+        <p>Map authored by Paul Puckett, 2016. The user should move their cursor over the counties shown in order to actuate a display showing the 2014 Median Household Income for that county. Circles are colleges and universities in Kentucky; clicking on them will provide more information about the school and its tuition</p>
+        <h2>About the data</h2>
+        <p>Tuition and enrollment data has been accumulated from school websites, 2014 Median Household income per county is via the United States Census.</p>    
+    
+    </div>    
+
+    <div id='lower-left-panel'>
+        <h1>Recent Education News</h1>
+        <h2>Click Link for Story</h2>
+        <p><a href="http://www.kentucky.com/news/state/kentucky/article97546582.html" target="_blank">Eastern Kentucky University considers cutting programs</a></p>
+        <p><a href="http://www.midway.edu/2016/05/16/midway-university-trustees-vote-accept-men-daytime-undergraduate-programs/" target="_blank">Midway University Trustees vote to accept men into its daytime undergraduate programs</a></p>
+        <p><a href="https://www.insidehighered.com/news/2016/06/20/southern-accreditor-puts-five-colleges-probation" target="_blank">Accreditor Puts 5 Colleges On Probation</a></p>
+        <p><a href="http://www.wdrb.com/story/32112881/st-catharine-college-closing-due-to-low-enrollment-and-debt-obligations2" target="_blank">St. Catherine's closing due to low enrollment and debt obligations</a></p>
+        <p><a href="http://www.courier-journal.com/picture-gallery/news/2015/04/09/gallery--spalding-universitys-43rd-running-of-the-rodents/25524677/" target="_blank">Spalding University's 43rd Annual Running of the Rodents</a></p>
+        <p><a href="http://www.kentucky.com/news/local/education/article97588577.html" target="_blank">Troubled MedTech College cancels classes in Lexington</a></p>
         
-        <ul>
-            <li>See the map: <a target = '_blank' href="/maps/OpenStreetSanFran.pdf" >San Francisco Bus Stops</a></li>
-            <li>Data Source: <a href="https://www.openstreetmap.org" >OpenStreetMap</a></li>
-        </ul>
+        
+    
+    </div>    
+<!--
+    <footer>
+        <p>Map authored by Paul Puckett</p>
+        <p>Choose from the pull-down menu to see different maps reflecting vacant housing in Kentucky. Move your cursor over individual counties for a closer look at the data for that particular county.</p>
+        
+    </footer>
+-->
+
+    <script>
+        
+        // create labels to be shown in the legend
+        var labels = {
+            "2014AAI": "2014 Median Household Income"
+        }
+        
+        // set up options for the map (NO ZOOM FOR YOU!)
+        var options = {
+            center: [37.8, -85.8],
+            zoom: 7.3,
+            minZoom: 7.3,
+            maxZoom: 7.3,
+            dragging: false,
+            zoomControl: false
+        }
+        
+        // create the map with the variables set up in options
+        var map = L.map('map', options);
+        
+        // create the dataLayer variable, to be populated in the $.getJSON object below, and create global                      variables for the vacant units 
+        var dataLayer,
+            schoolsLayer = L.layerGroup(),
+            attribute = "2014AAI";
+
+        omnivore.csv('KY_Schools-V3.csv')
+            .on('ready', function(e) {
             
-    </section>
+                // JQuery AJAX call to retrieve the js data from the file listed
+                $.getJSON("ky_counties_2014_household-median-incomes.geojson", function(data) {
+                    
+                    // pass the two datasets to drawMap function
+                    
+                    drawMap(data, e.target.toGeoJSON());
+                    
+                });
             
-    <section class="project">
-        <a target = '_blank' href="https://pwpuck.cartodb.com/viz/97643c5c-f480-11e5-95de-0e31c9be1b51/public_map"><image src="images/Eclipse2017.PNG" alt="Eclipse 2017" class="project-image" /></a>
-        <h3><a target = '_blank' href="https://pwpuck.cartodb.com/viz/97643c5c-f480-11e5-95de-0e31c9be1b51/public_map">Eclipse 2017</a></h3>
-        <p>A map illustrating the path of totality for the 2017 Solar Eclipse, with campground info</p>
-        <p>Zoom in to find the path of the eclipse in your region, and click on the green dots to find campground information.</p>
-        <ul>
-            <li>See the map: <a target = '_blank' href="https://pwpuck.cartodb.com/viz/97643c5c-f480-11e5-95de-0e31c9be1b51/public_map">Eclipse 2017</a></li>
-            <li> Data Source 1: <a href="http://www.eclipse2017.org" >Path of Totality</a></li>
-            <li> Data Source 2: <a href="http://www.poi-factory.com" >Campground Information at POI-Factory</a></li>
-            <li> Data Source 3: <a href="http://www.kysolareclipse.com" >KY Solar Eclipse Viewing Info</a></li>
+        })
+        .on('error', function(e) {
+            console.log(e.error[0].message);
+        });
+        
+                
+        function drawMap(data, incomes) {
+            // populate the dataLayer with county data and style the underlay
+            dataLayer = L.geoJson(data, {
+                 style: function(feature) {
+                    return {
+                            color: '#dddddd',
+                            weight: 3,
+                            fillOpacity: 1,
+                            fillColor: '#1f78b4'
+                        };
+                }          
+            }).addTo(map); //now add the AJAX call to the map
             
-        <ul>
-    </section>
+            drawLegend(); // create the drawLegend box, to be filled by updateLegend()
+
+            updateMap(); // draws the choropleth map
             
-    <section class="project">
-        <a target = '_blank' href="power-plants-map/" ><image src="images/powerplants.png" alt="Power Plants Map" class="project-image" /></a>
-        <h3><a target = '_blank' href="power-plants-map/" >Power Plants: From Wood Ash to Atoms</a></h3>
-        <p>An interactive map showing power plants using wood, coal, and nuclear fuel for power generation</p>
-        <p>Click the map to see power plants of different types within 500 km of the click point. Click on a plant to find more information, or click within the 500 km radius to learn aggregate power information for that area.</p>
-        <ul>
-            <li>See the map: <a href="power-plants-map/" >Power Plants: From Wood Ash to Atoms</a></li>
-            <li> Data Source: <a href="power-plants-map/power-plants.js">Power Plants Data geoJSON</a></li>
-            <li>See the <a href="https://github.com/paulpuckett/paulpuckett.github.io/tree/master/power-plants-map" >code for this map</a></li>
-        <ul>
-    </section>
+            drawInfo(); // sets up the upper-right box, but updateInfo() populates it
+            
+            drawSchools(incomes);
+            
+
+        
+        function drawSchools(data) {
+                        
+            console.log(data.features);
+            
+            schoolsLayer.addTo(map);
+            
+            var commonStyles = {
+                weight: 1,
+                stroke: 1,
+                fillOpacity: .8
+              }
+            
+//            var props = feature.properties;
+//            
+//            var content = "<b>School: <b>" + feature.properties +
+//                          "<br><b>Address: <b>" +feature.properties.ADDRESS+"," +feature.properties.CITY+"," + feature.properties.STATE+","+ feature.properties.ZIP+
+//                          "<br><b>Enrollment: <b>" + feature.properties.ENROLLMENT +
+//                          "<br><b>Tuition (In State): <b>" + feature.properties.TUITIONINSTATE;
+            
+            var publicSchools = L.geoJson(data, {
+
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, commonStyles);
+                },
+                filter: function(feature) {
+                    if(feature.properties.TYPE=="PUBLIC") {
+                        return feature;
+                    }
+                },
+                style: function(feature) {
+                    return {
+                        color: 'purple',
+                        fillcolor: 'purple',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: 0.2,
+                        radius: calcRadius(feature.properties.TUITIONINSTATE)
+                    }
+                },
+                onEachFeature : function(feature, layer) {
+                    layer.on('mouseover', function() {
+//                        console.log(feature.properties.ADDRESS);
+
+                    }).bindPopup("<b>School: </b>" + feature.properties.NAME +
+                                "<br><b>Address: </b>" +feature.properties.ADDRESS+", "+feature.properties.CITY+", "+feature.properties.STATE+", "+feature.properties.ZIP+ "<br><b>Enrollment: </b>" +feature.properties.ENROLLMENT+"<br><b>Annual Tuition (In-State): $</b>"+feature.properties.TUITIONINSTATE)
+                },
+                }).addTo(schoolsLayer);
+//                    .bindPopup("<b>School: <b>" + feature.properties.NAME);
+            
+            var privateSchools = L.geoJson(data, {
+
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, commonStyles);
+                },
+                filter: function(feature) {
+                    if(feature.properties.TYPE=="PRIVATE") {
+                        return feature;
+                    }
+                },
+                style: function(feature) {
+                    return {
+                        color: 'yellow',
+                        fillcolor: 'yellow',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: 0.2,
+                        radius: calcRadius(feature.properties.TUITIONINSTATE)
+                    }
+                },
+                onEachFeature : function(feature, layer) {
+                    layer.on('mouseover', function() {
+//                        console.log(feature.properties.ADDRESS);
+
+                    }).bindPopup("<b>School: </b>" + feature.properties.NAME +
+                                "<br><b>Address: </b>" +feature.properties.ADDRESS+", "+feature.properties.CITY+", "+feature.properties.STATE+", "+feature.properties.ZIP+ "<br><b>Enrollment: </b>" +feature.properties.ENROLLMENT+"<br><b>Annual Tuition (In-State): $</b>"+feature.properties.TUITIONINSTATE)
+                },
+                }).addTo(schoolsLayer);
+            
+            var kctcsSchools = L.geoJson(data, {
+
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, commonStyles);
+                },
+                filter: function(feature) {
+                    if(feature.properties.TYPE=="KCTCS") {
+                        return feature;
+                    }
+                },
+                style: function(feature) {
+                    return {
+                        color: 'red',
+                        fillcolor: 'red',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: 0.2,
+                        radius: calcRadius(feature.properties.TUITIONINSTATE)
+                    }
+                },
+                onEachFeature : function(feature, layer) {
+                    layer.on('mouseover', function() {
+//                        console.log(feature.properties.ADDRESS);
+
+                    }).bindPopup("<b>School: </b>" + feature.properties.NAME +
+                                "<br><b>Address: </b>" +feature.properties.ADDRESS+", "+feature.properties.CITY+", "+feature.properties.STATE+", "+feature.properties.ZIP+ "<br><b>Enrollment: </b>" +feature.properties.ENROLLMENT+"<br><b>Annual Tuition (In-State): $</b>"+feature.properties.TUITIONINSTATE)
+                },
+                }).addTo(schoolsLayer);
+            
+//            var sourcesLabels = {
+//                "<b style='purple'>Public</b>":schoolsLayer.publicSchools,
+//                "<b style='yellow'>Private</b>":schoolsLayer.privateSchools,
+//                "<b style='red'>KCTCS</b>":schoolsLayer.kctcsSchools
+//            }
+//
+//            L.control.layers(null, sourcesLabels, {setPosition: 'bottomleft'}).addTo(map);
+
+        }
+            
+            
+        }
+        
+        function calcRadius(val) {
+            var radius = Math.sqrt(val/Math.PI);
+            return radius * .3;
+        }
         
 
+
+        // This function draws the choropleth over the initial AJAX call
+        function updateMap() {
+            
+            // create a variable to hold the 7 class breaks
+            var breaks = getClassBreaks();
+
+            // iterate through 120 counties
+            dataLayer.eachLayer(function(layer) {
+                
+                // create a props variable so I don't have to type so much
+                var props = layer.feature.properties;
+                
+                // call the getColor() function to set the color to one of the seven break colors
+                layer.setStyle({
+                    // defines the fillcolor by finding a value, then checking breaks for the color to go with it
+                    fillColor: getColor(props[attribute], breaks)
+                });
+                // binds data from the js file so that when moused over, produces the data for that county
+                layer.bindPopup("<b>"+props["NAME"]+" County</b></br>" +
+                                labels[attribute] + ": " +
+                                props[attribute].toLocaleString()+"%");
+                layer.on('mouseover', function() {
+                    
+                    // updates the data for wherever the mousever has arrived
+                    updateInfo(this);
+                    
+                    // pushes a red county stroke color to whatever county is moused over
+                    layer.setStyle({color: 'red'});
+                        //.bringToFront();
+                });
+                
+                // returns the stroke color to gray when mouse leaves the county                
+                layer.on('mouseout', function() {
+                    
+                    layer.setStyle({color: '#dddddd'});
+                    
+                });
+            });
+            
+            // updates the legend at upper left with the correct break information
+            updateLegend(breaks);
+        }
+        
+        function drawInfo() {
+            
+            // creates a new control object and locates it in upper right of map
+            var info = L.control({position: 'topright'});
+            
+            // creates an empty div wrapper called info and returns it to the map
+            info.onAdd = function(map) {
+                
+                var div = L.DomUtil.create('div', 'info');
+                
+                return div;
+                
+            }
+            
+            // initially the info div is hidden...
+            info.addTo(map);
+            $(".info").hide();
+            
+            // until someone mouses over it
+            dataLayer.on('mouseover', function() {
+                $(".info").show();
+            });
+            // and disappears when they leave the county
+            dataLayer.on('mouseout', function() {
+                $(".info").hide();    
+            });
+            
+        }
+        
+        function getClassBreaks() {
+            
+            // creates an empty array to hold class break values
+            var values = [];
+            
+            // loops through each county, divides county attribute by norm, adds that result to the values array
+            dataLayer.eachLayer(function(layer) {
+                var value = layer.feature.properties[attribute];
+                values.push(value);   
+            }); 
+           
+            // sets up a clusters variable, which will take the values and group them into seven classes
+            var clusters = ss.ckmeans(values, 7);
+
+            // breaks is populated by the values fed into clusters, and is returned to the js
+            var breaks = clusters.map(function(cluster){
+                return [cluster[0],cluster.pop()];   
+            });
+
+            return breaks;
+            
+        }   
+        
+        function getColor(d, breaks) {
+            
+            // uses an if/else statement to determine color based on the breaks value for the county
+            if(d <= breaks[0][1]) {
+                return '#edf8fb';
+            } else if(d <= breaks[1][1]) {
+                return '#ccece6';
+            } else if(d <= breaks[2][1]) {
+                return '#99d8c9';
+            } else if(d <= breaks[3][1]) {
+                return '#66c2a4'
+            } else if(d <= breaks[4][1]) {
+                return '#41ae76'
+            } else if(d <= breaks[5][1]) {
+                return '#238b45'
+            } else if(d <= breaks[6][1]) {
+                return '#005824'
+            }
+        }
+        
+        function drawLegend() {
+            
+            // creates a new control object and puts it in the upper left of the map div
+            var legend = L.control({position: 'topleft'});
+
+            // creates a div within the control object called 'legend'...
+            legend.onAdd = function (map) {
+                
+                var div = L.DomUtil.create('div', 'legend');
+                
+                return div; // returns it...
+                
+            };
+
+            legend.addTo(map); // and adds it to the map
+        }
+        
+        function updateLegend(breaks) {
+
+                    // updates the legend based on the value picked from the pull-down menu
+                    var legend = $('.legend').html("<h3>" + labels[attribute] + "</h3><ul>");
+            
+                    // loops through the updated breaks return
+                    for (var i = 0; i <= breaks.length-1; i++) {
+
+                        // and updates the choropleth colors based on the breaks return
+                        var color = getColor(breaks[i][0], breaks);
+
+                        // also updates the legend
+                        legend.append(
+                            '<span style="background:' + color + '"></span> ' +
+                            '<label>'+(breaks[i][0]).toLocaleString() + ' &mdash; ' + 
+                            (breaks[i][1]).toLocaleString() + '</label>');
+                        }
+
+        }
+        
+        function updateInfo(layer) {
+
+            // creates a variable populated by the values found in layer.feature.properties
+            var props = layer.feature.properties;
+
+            // creates a more readable alias for the key names found in the js object
+            var html = "<h3>"+props['NAME']+" County</h3>"+
+                        "2014 Median Household Income: <b>"+ "$" + props["2014AAI"]+"</b><br>"
+
+            // and updates the info panel at upper right.
+            $(".info").html(html);
+        }
+
+    </script>
     
 </body>
+
 </html>
