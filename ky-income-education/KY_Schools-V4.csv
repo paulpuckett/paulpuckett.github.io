@@ -1,0 +1,44 @@
+NAME,LAT,LON,ADDRESS,CITY,STATE,ZIP,PUBLIC,PRIVATE,NONPROFIT,TUITIONINSTATE,LANDGRANT,KCTCS,TYPE,LINK,TUITION LINK
+Eastern Kentucky University,37.7430918,-84.300792,521 Lancaster Avenue,Richmond,KY,40475,YES,NO,YES,8868,NO,NO,PUBLIC,http://www.eku.edu/,https://finaid.eku.edu/cost-attendance
+Ashland Community and Technical College,38.4694797,-82.6496634,1400 College Drive,Ashland,KY,41101,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Big Sandy Community and Technical College,37.687717,-82.7785823,1 Bert Combs Drive,Prestonsburg,KY,41653,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Bluegrass Community and Technical College,38.0247912,-84.5037084,470 Cooper Drive,Lexington,KY,40502,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Elizabethtown Community and Technical College,37.6919389,-85.8771227,600 College Street Road,Elizabethtown,KY,42710,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Gateway Community and Technical College,38.961321,-84.632906,500 Technology Way,Florence,KY,41042,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Hazard Community and Technical College,37.2356411,-83.1766979,1 Community College Drive,Hazard,KY,41701,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Henderson Community College,37.797129,-87.6525354,2660 South Green Street,Henderson,KY,42420,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Hopkinsville Community College,36.8825283,-87.4875023,720 North Drive,Hopkinsville,KY,42241,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Jefferson Community and Technical College,38.2453317,-85.7555113,200 West Broadway,Louisville,KY,40202,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Madisonville Community College,37.3630487,-87.5123962,2000 College Drive,Madisonville,KY,42431,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Maysville Community and Technical College,38.6166149,-83.8097791,1755 US-68 BUS,Maysville,KY,41056,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Owensboro Community and Technical College,37.7150767,-87.0830441,4800 New Hartford Road,Owensboro,KY,42303,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Somerset Community College,37.0618199,-84.6186715,808 Monticello Street,Somerset,KY,42501,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Southcentral Kentucky Community and Technical College,36.9841297,-86.4801093,1845 Loop Avenue,Bowling Green,KY,42101,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Southeast Kentucky Community and Technical College,36.9661128,-82.9976986,700 College Road,Cumberland,KY,40823,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+West Kentucky Community and Technical College,37.0568018,-88.6569699,4810 Alben Barkley Drive,Paducah,KY,42001,YES,NO,YES,3744,NO,YES,KCTCS,http://www.kctcs.edu/,http://www.kctcs.edu/Affording_College/Tuition_and_Costs
+Kentucky State University,38.2010142,-84.8551533,400 East Main Street,Frankfort,KY,40601,YES,NO,YES,7406,YES,NO,PUBLIC,http://kysu.edu/,http://kysu.edu/administration-governance/finance-business/bursar/tuition-and-fees/
+Morehead State University,38.1865175,-83.435638,150 University Boulevard,Morehead,KY,40351,YES,NO,YES,8530,NO,NO,PUBLIC,http://www.moreheadstate.edu/,http://www.moreheadstate.edu/tuition/
+Murray State University,36.6103334,-88.314761,102 Curris Center,Murray,KY,42071,YES,NO,YES,7608,NO,NO,PUBLIC,http://www.murraystate.edu/,http://www.murraystate.edu/admissions/BursarsOffice/UndergraduateTuition.aspx
+Northern Kentucky University,39.0335492,-84.4589173,100 Louie B Nunn Drive,Highland Heights,KY,41099,YES,NO,YES,9000,NO,NO,PUBLIC,https://www.nku.edu/,https://studentaccountservices.nku.edu/tuition.html
+University of Kentucky,38.0357342,-84.505684,100 W.D. Funkhouser Building,Lexington,KY,40506,YES,NO,YES,11068,YES,NO,PUBLIC,http://www.uky.edu/UKHome/,http://www.uky.edu/registrar/tuition-fees
+University of Louisville,38.2150466,-85.7601326,2301 South Third Street,Louisville,KY,40292,YES,NO,YES,11068,NO,NO,PUBLIC,http://louisville.edu/,http://louisville.edu/admissions/aid/tuition
+Western Kentucky University,36.9878461,-86.4539097,1906 College Heights Boulevard,Bowling Green,KY,42101,YES,NO,YES,9912,NO,NO,PUBLIC,https://www.wku.edu/,https://www.wku.edu/bursar/tuition_fees_1617.php
+Alice Lloyd College,37.3359169,-82.8735939,100 Purpose Road,Pippa Passes,KY,41844,NO,YES,YES,0,NO,NO,PRIVATE,http://www.alc.edu/,http://www.alc.edu/admissions/financial-aid/appalachian-leaders-college-scholarship/
+Asbury University,37.8628325,-84.6627336,1 Macklem Drive,Wilmore,KY,40390,NO,YES,YES,28432,NO,NO,PRIVATE,https://www.asbury.edu/,https://www.asbury.edu/offices/financial-aid/costs
+Bellarmine University,38.2157643,-85.7031809,2001 Newburg Road,Louisville,KY,40205,NO,YES,YES,39350,NO,NO,PRIVATE,http://www.bellarmine.edu/,http://www.bellarmine.edu/financialaid/tuition/
+Berea College,37.5717311,-84.2897389,101 Chestnut Street,Berea,KY,40403,NO,YES,YES,0,NO,NO,PRIVATE,https://www.berea.edu/,https://www.berea.edu/admissions/tuition-promise/
+Brescia University,37.768595,-87.1109759,717 Frederica Street,Owensboro,KY,42301,NO,YES,YES,20500,NO,NO,PRIVATE,https://www.brescia.edu/,https://www.brescia.edu/tuition-costs
+Campbellsville University,37.3438568,-85.3489245,1 University Drive,Campbellsville,KY,42718,NO,YES,YES,24096,NO,NO,PRIVATE,http://www.campbellsville.edu/,https://tigernet.campbellsville.edu/ICS/Finances/2016-2017_Tuition_and_Fees.jnz
+Centre College,37.6443452,-84.7780193,600 West Walnut Street,Danville,KY,40422,NO,YES,YES,49250,NO,NO,PRIVATE,https://www.centre.edu/,https://www.centre.edu/admission-aid/cost-aid/cost-of-attendence/
+Frontier Nursing University,37.169393,-83.3818809,195 School Street,Hyden,KY,41749,NO,YES,YES,13200,NO,NO,PRIVATE,http://www.frontier.edu/,http://www.frontier.edu/tuition
+Georgetown College,38.2074008,-84.5567977,400 East College Street,Georgetown,KY,40324,NO,YES,YES,35650,NO,NO,PRIVATE,http://www.georgetowncollege.edu/,http://www.georgetowncollege.edu/businessoffice/tuition-fees/undergraduate/
+Kentucky Christian University,38.339171,-82.946523,100 Academic Parkway,Grayson,KY,41143,NO,YES,YES,18150,NO,NO,PRIVATE,https://www.kcu.edu/,https://www.kcu.edu/campus-offices/financial-aid/cost-of-an-education-at-kcu/
+Kentucky Wesleyan College,37.7435478,-87.1201839,3000 Frederica Street,Owensboro,KY,42301,NO,YES,YES,23350,NO,NO,PRIVATE,http://kwc.edu/,http://kwc.edu/admissions/financial-aid/tuition-and-fees/
+Lindsey Wilson College,37.1027852,-85.3015101,210 Lindsey Wilson Street,Columbia,KY,42728,NO,YES,YES,23520,NO,NO,PRIVATE,http://www.lindsey.edu/,http://www.lindsey.edu/admissions/making-lwc-affordable/tuition-and-fees.aspx
+Midway University,38.1445736,-84.6772838,512 East Stephens Street,Midway,KY,40347,NO,YES,YES,23100,NO,NO,PRIVATE,http://www.midway.edu/,http://www.midway.edu/admissions-aid/cost-aid/tuition-fees/
+Spalding University,38.2415146,-85.7588576,901 South Fourth Street,Louisville,KY,40203,NO,YES,YES,23850,NO,NO,PRIVATE,http://spalding.edu/,https://spalding.edu/financial-aid/cost/
+Thomas More College,39.0207707,-84.5668496,333 Thomas More Parkway,Crestview Hills,KY,41017,NO,YES,YES,28050,NO,NO,PRIVATE,http://www.thomasmore.edu/,http://www.thomasmore.edu/financial_aid/tuition.cfm?id=5
+Transylvania University,38.0528151,-84.4922327,300 North Broadway,Lexington,KY,40508,NO,YES,YES,35830,NO,NO,PRIVATE,http://www.transy.edu/,http://www.transy.edu/admission/cost
+Union College,36.8700703,-83.8892815,310 College Street,Barbourville,KY,40906,NO,YES,YES,23640,NO,NO,PRIVATE,http://www.unionky.edu/,http://www.unionky.edu/departments/businessservices/tuition-fees
+University of the Cumberlands,36.736532,-84.1658388,6178 College Street,Williamsburg,KY,40769,NO,YES,YES,23000,NO,NO,PRIVATE,http://www.ucumberlands.edu/,http://www.ucumberlands.edu/admissions/tuition
+University of Pikeville,37.478915,-82.5210042,147 Sycamore Street,Pikeville,KY,41501,NO,YES,YES,19600,NO,NO,PRIVATE,http://www.upike.edu/,http://www.upike.edu/Admissions/Financial-Aid/cost

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>KY Income and Education</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            width: 80%;
+            margin: 10px auto 10px auto;
+        }
+        h1 {
+            margin-right: 20px;
+            color: #001323;
+            font-size: 1.5em;
+        }
+        h2 {
+            color: #001323;
+            font-size: 1.2em;
+        }
+        #map {
+            position:absolute;
+            top:0;
+            bottom:0;
+            left: 0;
+            width: 67%;
+            background: whitesmoke;
+            border-lef: 2px solid #dddedf;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 0.9em;
+            color: #001323;
+        }
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .legend h3 {
+            font-size: 1.1em;
+            font-weight: normal;
+            color: #001323;
+            margin: 0 0 10px 0;
+        }
+        .legend span {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin: 0 10px 4px 0;
+        }
+        .legend label {
+            font-size: 1.1em;
+        }
+        .legend label:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .leaflet-popup-content {
+            max-width: 160px;   
+        }
+        .panel {
+            position: absolute;
+            right: 0;
+/*            height: 50%;*/
+            width: 30%;
+            background: whitesmoke;
+            padding: 0 20px 0 20px;
+            overflow-y: scroll;
+        }
+        .upper-right-panel {
+            top: 0;
+/*            height: 60%;*/
+        }
+        .lower-right-panel {
+            bottom: 0;
+/*            height: 30%;*/
+        }
+        .panel p {
+            font-weight: lighter;
+            line-height: 1.5em;
+        }
+        .panel ul {
+            margin-left: 0;
+            padding-left: 20px;
+            font-size: .9em;
+        }
+        .panel li {
+            
+        }
+        .panel a {
+            text-decoration: none;
+            color: green;
+        }
+        .panel a:hover {
+            text-decoration: underline;
+        }
+            
+        
+    </style>
+</head>
+
+<body>
+
+
+    <div id='map'></div>
+    
+    <div class='panel'>
+        <h2><u>Kentucky Income and the Price of Education</u></h2>
+        <p>As college becomes more and more expensive, it is important to know the options available to incoming students and their families.</p>
+        <p>This map illustrates Kentucky post-secondary, non-profit, public 4-year colleges in purple, private 4-year colleges in yellow, and the 2-year <a href="http://www.kctcs.edu/" target="_blank">Kentucky Community and Technical College System</a> in red. The size of the circle representing the school is relative to their cost. The larger the circle, the higher the cost. <a href="https://www.berea.edu/admissions/tuition-promise/" target="_blank">Berea College</a> and <a href="http://www.alc.edu/about-us/our-service-area/" target="_blank">Alice Lloyd College</a> have unique, tuition-free opportunities.</p>
+        <p>This map also illustrates the 2014 Kentucky Median Household Income per the U.S. Census to contrast the cost of post-secondary education with the current tuition costs of Kentucky Colleges and Universities</p>
+        <p>Instructions: Move your mouse over the county to see the 2014 Kentucky Household Median Income for that county. Click on the circle for more information about the school. Use the checkboxes at left to toggle types of schools on and off.</p>
+        <h2>About this map</h2>
+        <p>Map authored by Paul Puckett, 2016.</p>
+        <h2>About the data</h2>
+        <p>Tuition data has been accumulated from the school websites, 2014 Median Household income per county is via the <a href="https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml" target="_blank">United States Census</a>, and the list of schools is via the <a href="https://cpe.ky.gov" target="_blank">Kentucky Council on Postsecondary Education</a></p>    
+    
+    </div>    
+
+    <script>
+        
+        // create labels to be shown in the legend
+        var labels = {
+            "2014AAI": "Kentucky 2014 Median<br> Household Income"
+        }
+        
+        // set up options for the map (NO ZOOM FOR YOU!)
+        var options = {
+            center: [37.8, -85.8],
+            zoom: 7.3,
+//            minZoom: 7.3,
+//            maxZoom: 7.3,
+//            dragging: false,
+//            zoomControl: false
+        }
+        
+        // create the map with the variables set up in options
+        var map = L.map('map', options);
+        
+        // create the dataLayer variable, to be populated in the $.getJSON object below, and create global                      variables for the vacant units 
+        var dataLayer,
+            schoolsLayer = L.layerGroup(),
+            attribute = "2014AAI";
+        
+        omnivore.csv('KY_Schools-V4.csv')
+            .on('ready', function(e) {
+            
+                // JQuery AJAX call to retrieve the js data from the file listed
+                $.getJSON("ky_counties_2014_household-median-incomes.geojson", function(data) {
+                    
+                    // pass the two datasets to drawMap function
+                    
+                    drawMap(data, e.target.toGeoJSON());
+                    
+                });
+            
+        })
+        .on('error', function(e) {
+            console.log(e.error[0].message);
+        });
+        
+                
+        function drawMap(data, incomes) {
+            // populate the dataLayer with county data and style the underlay
+            dataLayer = L.geoJson(data, {
+                 style: function(feature) {
+                    return {
+                            color: '#dddddd',
+                            weight: 3,
+                            fillOpacity: 1,
+                            fillColor: '#1f78b4'
+                        };
+                }          
+            }).addTo(map); //now add the AJAX call to the map
+            
+            drawLegend(); // create the drawLegend box, to be filled by updateLegend()
+
+            updateMap(); // draws the choropleth map
+            
+            drawInfo(); // sets up the upper-right box, but updateInfo() populates it
+            
+            drawSchools(incomes);
+            
+
+        
+        function drawSchools(data) {
+                        
+            console.log(data.features);
+            
+            schoolsLayer.addTo(map);
+            
+            var commonStyles = {
+                weight: 1,
+                stroke: 1,
+                fillOpacity: .8
+              }
+            
+            var publicSchools = L.geoJson(data, {
+
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, commonStyles);
+                },
+                filter: function(feature) {
+                    if(feature.properties.TYPE=="PUBLIC") {
+                        return feature;
+                    }
+                },
+                style: function(feature) {
+                    return {
+                        color: 'purple',
+                        fillcolor: 'purple',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: 0.2,
+                        radius: calcRadius(feature.properties.TUITIONINSTATE)
+                    }
+                },
+                onEachFeature : function(feature, layer) {
+                    layer.on('mouseover', function() {
+//                        console.log(feature.properties.ADDRESS);
+
+                    }).bindPopup("<b>School: </b>" + feature.properties.NAME +
+                                 "<br><b>Website: </b>" + feature.properties.LINK + "<br><b>Annual Tuition (In-State): $</b>"+feature.properties.TUITIONINSTATE)
+                },
+                }).addTo(schoolsLayer);
+                
+            
+            var privateSchools = L.geoJson(data, {
+
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, commonStyles);
+                },
+                filter: function(feature) {
+                    if(feature.properties.TYPE=="PRIVATE") {
+                        return feature;
+                    }
+                },
+                style: function(feature) {
+                    return {
+                        color: 'yellow',
+                        fillcolor: 'yellow',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: 0.2,
+                        radius: calcRadius(feature.properties.TUITIONINSTATE)
+                    }
+                },
+                onEachFeature : function(feature, layer) {
+                    layer.on('mouseover', function() {
+//                        console.log(feature.properties.ADDRESS);
+
+                    }).bindPopup("<b>School: </b>" + feature.properties.NAME +
+                                "<br><b>Website: </b>" + feature.properties.LINK + "<br><b>Annual Tuition (In-State): $</b>"+feature.properties.TUITIONINSTATE)
+                },
+                }).addTo(schoolsLayer);
+            
+            var kctcsSchools = L.geoJson(data, {
+
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, commonStyles);
+                },
+                filter: function(feature) {
+                    if(feature.properties.TYPE=="KCTCS") {
+                        return feature;
+                    }
+                },
+                style: function(feature) {
+                    return {
+                        color: 'red',
+                        fillcolor: 'red',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: 0.2,
+                        radius: calcRadius(feature.properties.TUITIONINSTATE)
+                    }
+                },
+                onEachFeature : function(feature, layer) {
+                    layer.on('mouseover', function() {
+//                        console.log(feature.properties.ADDRESS);
+
+                    }).bindPopup("<b>School: </b>" + feature.properties.NAME +
+                                "<br><b>Website: </b>" + feature.properties.LINK + "<br><b>Annual Tuition (In-State): $</b>"+feature.properties.TUITIONINSTATE)
+                },
+                }).addTo(schoolsLayer);
+            
+            var sourcesLabels = {
+                "<b style='color:#800080'>Public Schools</b>":publicSchools,
+                "<b style='color:#ffff00; text-shadow: 1px 1px 1px #000;'>Private Schools</b>":privateSchools,
+                "<b style='color:#ff0000'>KCTCS Schools</b>":kctcsSchools
+            }
+
+            L.control.layers(null, sourcesLabels, {
+                collapsed: false,
+                position: 'topleft'
+            }).addTo(map);
+
+        }
+            
+            
+        }
+        
+        function calcRadius(val) {
+            var radius = Math.sqrt(val/Math.PI);
+            return radius * .3;
+        }
+        
+
+
+        // This function draws the choropleth over the initial AJAX call
+        function updateMap() {
+            
+            // create a variable to hold the 7 class breaks
+            var breaks = getClassBreaks();
+
+            // iterate through 120 counties
+            dataLayer.eachLayer(function(layer) {
+                
+                // create a props variable so I don't have to type so much
+                var props = layer.feature.properties;
+                
+                // call the getColor() function to set the color to one of the seven break colors
+                layer.setStyle({
+                    // defines the fillcolor by finding a value, then checking breaks for the color to go with it
+                    fillColor: getColor(props[attribute], breaks)
+                });
+                // binds data from the js file so that when moused over, produces the data for that county
+                layer.bindPopup("<b>"+props["NAME"]+" County</b></br>" +
+                                labels[attribute] + ": " +
+                                "$" + props[attribute].toLocaleString()+"");
+                layer.on('mouseover', function() {
+                    
+                    // updates the data for wherever the mousever has arrived
+                    updateInfo(this);
+                    
+                    // pushes a red county stroke color to whatever county is moused over
+                    layer.setStyle({color: 'red'});
+                        //.bringToFront();
+                });
+                
+                // returns the stroke color to gray when mouse leaves the county                
+                layer.on('mouseout', function() {
+                    
+                    layer.setStyle({color: '#dddddd'});
+                    
+                });
+            });
+            
+            // updates the legend at upper left with the correct break information
+            updateLegend(breaks);
+        }
+        
+        function drawInfo() {
+            
+            // creates a new control object and locates it in upper right of map
+            var info = L.control({position: 'topright'});
+            
+            // creates an empty div wrapper called info and returns it to the map
+            info.onAdd = function(map) {
+                
+                var div = L.DomUtil.create('div', 'info');
+                
+                return div;
+                
+            }
+            
+            // initially the info div is hidden...
+            info.addTo(map);
+            $(".info").hide();
+            
+            // until someone mouses over it
+            dataLayer.on('mouseover', function() {
+                $(".info").show();
+            });
+            // and disappears when they leave the county
+            dataLayer.on('mouseout', function() {
+                $(".info").hide();    
+            });
+            
+        }
+        
+        function getClassBreaks() {
+            
+            // creates an empty array to hold class break values
+            var values = [];
+            
+            // loops through each county, divides county attribute by norm, adds that result to the values array
+            dataLayer.eachLayer(function(layer) {
+                var value = layer.feature.properties[attribute];
+                values.push(value);   
+            }); 
+           
+            // sets up a clusters variable, which will take the values and group them into seven classes
+            var clusters = ss.ckmeans(values, 7);
+
+            // breaks is populated by the values fed into clusters, and is returned to the js
+            var breaks = clusters.map(function(cluster){
+                return [cluster[0],cluster.pop()];   
+            });
+
+            return breaks;
+            
+        }   
+        
+        function getColor(d, breaks) {
+            
+            // uses an if/else statement to determine color based on the breaks value for the county
+            if(d <= breaks[0][1]) {
+                return '#edf8fb';
+            } else if(d <= breaks[1][1]) {
+                return '#ccece6';
+            } else if(d <= breaks[2][1]) {
+                return '#99d8c9';
+            } else if(d <= breaks[3][1]) {
+                return '#66c2a4'
+            } else if(d <= breaks[4][1]) {
+                return '#41ae76'
+            } else if(d <= breaks[5][1]) {
+                return '#238b45'
+            } else if(d <= breaks[6][1]) {
+                return '#005824'
+            }
+        }
+        
+        function drawLegend() {
+            
+            // creates a new control object and puts it in the upper left of the map div
+            var legend = L.control({position: 'topleft'});
+
+            // creates a div within the control object called 'legend'...
+            legend.onAdd = function (map) {
+                
+                var div = L.DomUtil.create('div', 'legend');
+                
+                return div; // returns it...
+                
+            };
+
+            legend.addTo(map); // and adds it to the map
+        }
+        
+        function updateLegend(breaks) {
+
+                    // updates the legend based on the value picked from the pull-down menu
+                    var legend = $('.legend').html("<h3>" + labels[attribute] + "</h3><ul>");
+            
+                    // loops through the updated breaks return
+                    for (var i = 0; i <= breaks.length-1; i++) {
+
+                        // and updates the choropleth colors based on the breaks return
+                        var color = getColor(breaks[i][0], breaks);
+
+                        // also updates the legend
+                        legend.append(
+                            '<span style="background:' + color + '"></span> ' +
+                            '<label>'+(breaks[i][0]).toLocaleString() + ' &mdash; ' + 
+                            (breaks[i][1]).toLocaleString() + '</label>');
+                        }
+
+        }
+        
+        function updateInfo(layer) {
+
+            // creates a variable populated by the values found in layer.feature.properties
+            var props = layer.feature.properties;
+
+            // creates a more readable alias for the key names found in the js object
+            var html = "<h3>"+props['NAME']+" County</h3>"+
+                        "2014 Median Household Income: <b>"+ "$" + props["2014AAI"]+"</b><br>"
+
+            // and updates the info panel at upper right.
+            $(".info").html(html);
+        }
+
+    </script>
+    
+</body>
+
+</html>
